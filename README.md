@@ -179,3 +179,85 @@ Optional bonus:
 - add authentication for SSE or HTTP transport
 - support both SQLite and PostgreSQL with the same MCP surface
 - add richer output annotations or pagination
+
+## Implementation Details & Quick Start
+
+This project has been implemented inside the `implementation/` directory.
+
+### Project Structure
+- [db.py](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/db.py): SQLite database adapter with strict whitelists and validation logic.
+- [init_db.py](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/init_db.py): Seeds the relational database (`students`, `courses`, `enrollments`).
+- [mcp_server.py](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/mcp_server.py): FastMCP server exposing `search`, `insert`, and `aggregate` tools, and `schema://database` and `schema://table/{table_name}` resources.
+- [verify_server.py](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/verify_server.py): Executable validation script.
+- [test_server.py](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/tests/test_server.py): Core suite of unit tests.
+- [start_inspector.bat](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/start_inspector.bat) / [start_inspector.sh](file:///d:/code/AI%20thuc%20chien/Day26-Track3-MCP-tool-integration/implementation/start_inspector.sh): Quick startup scripts for the MCP Inspector.
+
+### Setup and Running Instructions
+
+1. **Virtual Environment Setup:**
+   Create a virtual environment and install the required dependencies:
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate  # Windows
+   pip install fastmcp
+   ```
+
+2. **Initialize the Database:**
+   ```bash
+   python implementation/init_db.py
+   ```
+
+3. **Running Sanity Checks:**
+   ```bash
+   python implementation/verify_server.py
+   ```
+
+4. **Running Unit Tests:**
+   ```bash
+   python -m unittest implementation/tests/test_server.py
+   ```
+
+5. **Start MCP Inspector:**
+   To test with the interactive Model Context Protocol Inspector:
+   - On Windows:
+     ```cmd
+     implementation\start_inspector.bat
+     ```
+   - On Linux/macOS:
+     ```bash
+     chmod +x implementation/start_inspector.sh
+     implementation/start_inspector.sh
+     ```
+
+### Client Configurations
+
+#### Antigravity / Gemini CLI config (`mcp_config.json`):
+```json
+{
+  "mcpServers": {
+    "sqlite-lab": {
+      "command": "d:/code/AI thuc chien/Day26-Track3-MCP-tool-integration/.venv/Scripts/python.exe",
+      "args": [
+        "d:/code/AI thuc chien/Day26-Track3-MCP-tool-integration/implementation/mcp_server.py"
+      ],
+      "cwd": "d:/code/AI thuc chien/Day26-Track3-MCP-tool-integration/implementation"
+    }
+  }
+}
+```
+
+#### Claude Code config (`.mcp.json`):
+```json
+{
+  "mcpServers": {
+    "sqlite-lab": {
+      "type": "stdio",
+      "command": "d:/code/AI thuc chien/Day26-Track3-MCP-tool-integration/.venv/Scripts/python.exe",
+      "args": [
+        "d:/code/AI thuc chien/Day26-Track3-MCP-tool-integration/implementation/mcp_server.py"
+      ],
+      "env": {}
+    }
+  }
+}
+```
